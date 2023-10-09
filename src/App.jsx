@@ -2,11 +2,17 @@
 import { useEffect, useReducer, useState } from "react";
 import Header from "./Header";
 import Body from "./Body";
-
+import Loader from "./Loader";
+import Error from "./Error";
+import StartScreen from "./StartScreen";
+import Question from "./Question";
 const initialState = {
 	questions: [],
 	//loading, error, ready, active, finished
 	status: "loading",
+	index: 0,
+	answer: null,
+	points: 0,
 };
 function reducer(state, action) {
 	switch (action.type) {
@@ -14,20 +20,36 @@ function reducer(state, action) {
 			return { ...state, questions: action.payload, status: "ready" };
 		case "error":
 			return { ...state, status: "error" };
+		case "start":
+			return { ...state, status: "active" };
+		case "newAnswer":
+			const question = state.questions.at(state.index);
+			return {
+				...state,
+				answer: action.payload,
+				points:
+					action.payload === question.correctOption
+						? state.points + Number(question.points)
+						: state.points,
+			};
 		default:
 			throw new Error("Unknown action");
 	}
 }
 
 function App() {
-	const [state, dispatch] = useReducer(reducer, initialState);
+	const [{ questions, status, index, answer }, dispatch] = useReducer(
+		reducer,
+		initialState,
+	);
+	const numQuestions = questions.length;
 	useEffect(() => {
 		async function fetchData() {
 			try {
 				const res = await fetch("http://localhost:8000/questions");
 				if (!res.ok) throw new Error("something not right");
 				const data = await res.json();
-				console.log(data);
+
 				dispatch({ type: "dataReceived", payload: data });
 			} catch (err) {
 				dispatch({ type: "error" });
@@ -39,8 +61,18 @@ function App() {
 		<div className="app">
 			<Header />
 			<Body>
-				<p>1/15</p>
-				<p>question</p>
+				{status === "loading" && <Loader />}
+				{status === "error" && <Error />}
+				{status === "ready" && (
+					<StartScreen numQuestions={numQuestions} dispatch={dispatch} />
+				)}
+				{status === "active" && (
+					<Question
+						question={questions[index]}
+						dispatch={dispatch}
+						answer={answer}
+					/>
+				)}
 			</Body>
 		</div>
 	);

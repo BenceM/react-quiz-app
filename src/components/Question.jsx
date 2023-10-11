@@ -8,7 +8,7 @@ const Question = ({ question, dispatch, answer }) => {
 			<div className="options">
 				{question.options.map((el, i) => (
 					<button
-						className={`btn btn-option ${i === answer ? "answer" : ""}${
+						className={`btn btn-option ${i === answer ? "answer " : ""}${
 							hasAnswered
 								? i === question.correctOption
 									? "correct"

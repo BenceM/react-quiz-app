@@ -1,6 +1,6 @@
 import React from "react";
 
-function FinishScreen({ points, totalPoints, highScore }) {
+function FinishScreen({ points, totalPoints, highScore, dispatch }) {
 	const percentage = Math.ceil((points / totalPoints) * 100);
 	return (
 		<>
@@ -9,6 +9,12 @@ function FinishScreen({ points, totalPoints, highScore }) {
 				{percentage}%)
 			</p>
 			<p className="highscore"> Highscore: {highScore} points</p>
+			<button
+				className="btn btn-ui"
+				onClick={() => dispatch({ type: "restart" })}
+			>
+				Restart
+			</button>
 		</>
 	);
 }

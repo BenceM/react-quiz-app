@@ -14,27 +14,8 @@ import Timer from "./components/Timer";
 import { useQuiz } from "./context/QuizContext";
 
 function App() {
-	const {
-		questions,
-		status,
+	const { status } = useQuiz();
 
-		dispatch,
-	} = useQuiz();
-
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				const res = await fetch("http://localhost:8000/questions");
-				if (!res.ok) throw new Error("something not right");
-				const data = await res.json();
-
-				dispatch({ type: "dataReceived", payload: data });
-			} catch (err) {
-				dispatch({ type: "error" });
-			}
-		}
-		fetchData();
-	}, []);
 	return (
 		<div className="app">
 			<Header />

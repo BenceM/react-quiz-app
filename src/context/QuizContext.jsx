@@ -67,6 +67,20 @@ function QuizProvider({ children }) {
 		(acc, question) => acc + question.points,
 		0,
 	);
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				const res = await fetch("http://localhost:8000/questions");
+				if (!res.ok) throw new Error("something not right");
+				const data = await res.json();
+
+				dispatch({ type: "dataReceived", payload: data });
+			} catch (err) {
+				dispatch({ type: "error" });
+			}
+		}
+		fetchData();
+	}, []);
 	return (
 		<QuizContext.Provider
 			value={{
